@@ -1,6 +1,6 @@
 # Automatic Differentiable Design of Photonic Tensor Cores (ADEPT)
 
-By [Jiaqi Gu](https://github.com/JeremieMelo), [Hanqing Zhu](https://github.com/zhuhanqing), [Chenghao Feng](https://github.com/Fengchenghao1996), Zixuan Jiang, Mingjie Liu, [Zixuan Jiang](https://github.com/zixuanjiang), Shuhan Zhang, Ray T. Chen and David Z. Pan.
+By [Jiaqi Gu](https://github.com/JeremieMelo), [Hanqing Zhu](https://github.com/zhuhanqing), [Chenghao Feng](https://github.com/Fengchenghao1996), [Zixuan Jiang](https://github.com/zixuanjiang), Mingjie Liu, Shuhan Zhang, Ray T. Chen and David Z. Pan.
 
 This repo is the official implementation of "[ADEPT: Automatic Differentiable DEsign of Photonic Tensor Cores](https://arxiv.org/abs/2112.08703)".
 
