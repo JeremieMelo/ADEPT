@@ -1,0 +1,89 @@
+criterion:
+  name: ce
+  perm_loss_weight: 0.0001
+  cr_loss_weight: 1
+
+optimizer:
+  name: adam
+  lr: 0.002
+  weight_decay: 0.0001
+
+scheduler:
+  # name: cosine_warmup
+  name: cosine
+  lr_gamma: 0.99
+  lr_min: 0
+  warmup_steps: 2
+
+run:
+  experiment: "mnist_cnn_pretrain"
+  n_epochs: 100
+  batch_size: 32
+
+quantize:
+  weight_bit: 8
+  input_bit: 8
+  v_pi: 4.36
+  v_max: 2.0
+
+noise:
+  input_snr: 0
+  input_er: 0
+  detection_noise: 0
+  detection_snr: 0
+  sigma_noise_std: 0
+
+device:
+  coupler_transmission_factor_t: 0.711
+  coupler_insertion_loss: 0.045
+  crossing_transmission_factor: 0.983
+  crossing_phase_shift: 0.08
+  phase_noise_std: 0
+  input_uncertainty: 0
+
+checkpoint:
+  save_best_model_k: 3
+  checkpoint_dir: "mnist/cnn/pretrain"
+  model_comment: ""
+  resume: 0
+  restore_checkpoint: ""
+  no_linear: 0
+
+model:
+  name: "SuperOCNN"
+  kernel_list: [16, 16]
+  kernel_size_list: [3, 3]
+  stride_list: [2, 1]
+  padding_list: [1, 1]
+  hidden_list: []
+  block_list: [4, 4, 4]
+  pool_out_size: 5
+  act: relu
+  act_thres: 6
+  norm: bn
+  photodetect: True
+
+super_layer:
+  name: ps_dc_cr
+  arch:
+    n_waveguides: 4
+    n_front_share_waveguides: 4
+    n_front_share_ops: 4
+    n_blocks: 4
+    n_layers_per_block: 2
+    n_front_share_blocks: 2
+    share_ps: none
+    interleave_dc: True
+  # sample_arch: [4, 2, 1, 4, 2, 1, 4, 2, 1, 4, 2, 1, 4]
+  sample_arch: [2, 1, 2, 1, 2, 1, 2, 1, 4]
+  sampler:
+    strategy:
+      name: plain # plain, limit_diff
+
+teacher:
+  name: null
+  checkpoint: ""
+
+debug:
+  verbose: 1
+

@@ -1,0 +1,148 @@
+criterion:
+  name: ce
+  # perm_loss_rho: 2e-7 #1e-10 # 0.0001
+  # perm_loss_rho: 1e-3 #1e-10 # 0.0001
+  # perm_loss_rho: 3e-5 #1e-10 # 0.0001
+  perm_loss_rho: 0.00001
+  perm_loss_rho_gamma: 1.07
+  # area_loss_rho: 1e-1 # 1e-10 #0.00001 # 0.0001 # 0.001 # 0.01
+  # area_loss_rho: 1e-1 # 1e-10 #0.00001 # 0.0001 # 0.001 # 0.01
+  area_loss_rho: 0 # 1e-10 #0.00001 # 0.0001 # 0.001 # 0.01
+  cross_density_loss_rho: 0
+
+soft_criterion:
+  name: adaptive
+
+# weight_optimizer:
+#   name: sgd
+#   lr: 0.01
+#   weight_decay: 0.0001
+#   momentum: 0.9
+#   grad_clip_value: 1
+#   bn_weight_decay: 0
+#   bias_decay: 0
+#   perm_decay: 0
+#   dc_decay: 0
+
+weight_optimizer:
+  name: adamw
+  lr: 0.002
+  weight_decay: 0.001
+  betas: [0.9, 0.999]
+  grad_clip_value: 10
+  bn_weight_decay: 0
+  bias_decay: 0
+  perm_decay: 0
+  dc_decay: 0
+
+scheduler:
+  # name: cosine_warmup
+  name: cosine
+  lr_gamma: 0.99
+  lr_min: 1e-5
+  warmup_steps: 2
+
+run:
+  experiment: "svhn_vgg8_retrain_16"
+  n_epochs: 100
+  batch_size: 32
+  log_interval: 200
+  # inplace_distill: True
+  inplace_distill: False
+  train_arch_epoch : 10
+  train_arch_interval: 3
+  # train_arch_ratio: 0.3
+  train_arch_ratio: 0.2
+  n_samples: 1000
+
+quantize:
+  weight_bit: 8
+  input_bit: 8
+  v_pi: 4.36
+  v_max: 2.0
+
+noise:
+  input_snr: 0
+  input_er: 0
+  detection_noise: 0
+  detection_snr: 0
+  sigma_noise_std: 0
+  phase_noise_std: 0.02
+  dc_noise_std: 0.01
+  cr_noise_std: 0
+
+device:
+  coupler_transmission_factor_t: 0.711
+  coupler_insertion_loss: 0.045
+  crossing_transmission_factor: 0.983
+  crossing_phase_shift: 0.08
+  phase_noise_std: 0
+  input_uncertainty: 0
+
+checkpoint:
+  save_best_model_k: 3
+  checkpoint_dir: "svhn/vgg8/retrain_16"
+  model_comment: ""
+  resume: 0
+  restore_checkpoint: ""
+  supermesh_checkpoint: ""
+  no_linear: 0
+
+model:
+  name: "VGG8"
+  kernel_list: [6, 16]
+  kernel_size_list: [5, 5]
+  stride_list: [1, 1]
+  padding_list: [2, 0]
+  hidden_list: [120, 84]
+  block_list: [16, 16, 16, 16, 16]
+  pool_out_size: 0
+  act: relu
+  act_thres: 6
+  norm: bn
+  photodetect: True
+  bn_affine: True
+
+super_layer:
+  name: ps_dc_cr_adept
+  arch:
+    n_waveguides: 16
+    n_front_share_waveguides: 16
+    n_front_share_ops: 16
+    n_blocks: 16
+    n_layers_per_block: 2
+    n_front_share_blocks: 4
+    # share_ps: row_col
+    share_ps: none
+    interleave_dc: True
+    symmetry_cr: False
+    device_cost:
+      ps_weight: 6.8
+      dc_weight: 1.5
+      cr_weight: 0.064
+      area_upper_bound: 120
+      area_lower_bound: 70
+      first_active_block: True
+    # interleave_dc: False
+  # sample_arch: [8, 4, 1, 8, 4, 1, 8, 4, 1, 8, 4, 1, 4]
+  # sample_arch: [4, 1, 4, 1, 4, 1, 4, 1, 4]
+  sample_arch: null
+  sampler:
+    strategy:
+      # name: plain # plain, limit_diff, limit_diff_expanding, ldiff_blkexpand
+      name: ldiff_blkexpand
+      n_diffs: 1
+      n_chunks: 3
+      n_stages: 20
+  num_subnet_training: 4
+  init_gumbel_temperature: 5
+  gumbel_decay_rate: 0.956
+  arch_mask_mode: gumbel_soft
+
+teacher:
+  name: null
+  checkpoint: ""
+
+debug:
+  verbose: 1
+
